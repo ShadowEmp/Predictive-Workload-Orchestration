@@ -1,7 +1,7 @@
 .technology-page {
   position: relative;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
   background:
     radial-gradient(circle at 16% 11%, rgba(6, 182, 212, 0.12), transparent 28%),
     radial-gradient(circle at 82% 18%, rgba(224, 35, 28, 0.12), transparent 30%),
