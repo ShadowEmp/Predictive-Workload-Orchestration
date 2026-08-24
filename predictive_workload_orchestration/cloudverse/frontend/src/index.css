@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-dark: #0a0c10;
+  --bg-panel: rgba(22, 27, 34, 0.7);
+  --bg-panel-border: rgba(48, 54, 61, 0.5);
+  
+  /* Kage-inspired tokens */
+  --ink: #05070a;
+  --bone: #dfe7e0;
+  --bone-dim: #aab4ad;
+  --muted: #78837c;
+  --vermilion: #e0231c;
+  --ember: #ff5a3c;
+  --gold: #c9a24a;
+  --line-soft: rgba(223,231,224,.07);
+
+  --text-primary: var(--bone);
+  --text-secondary: var(--bone-dim);
+  
+  --accent-blue: #3b82f6;
+  --accent-cyan: #06b6d4;
+  --accent-purple: #8b5cf6;
+  --accent-green: #10b981;
+  --accent-red: var(--vermilion);
+  
+  --glass-bg: rgba(5, 7, 10, 0.4);
+  --glass-blur: blur(14px) saturate(1.1);
+  --glass-border: 1px solid rgba(223, 231, 224, 0.13);
+  
+  --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-red);
+}
+
+.premium-gradient-text {
+  background: linear-gradient(135deg, var(--accent-red) 0%, #ff8c00 50%, var(--accent-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: var(--glass-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.nav-link {
+  position: relative;
+  display: inline-block;
+  padding: 8px 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--text-primary);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background: var(--accent-red);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after, .nav-link.active::after {
+  width: 100%;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-red) 0%, #ff8c00 100%);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-family: var(--font-main);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.39);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--bg-panel-border);
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-family: var(--font-main);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-secondary);
+}
+
+/* Base layout for pages */
+.page-container {
+  min-height: 100vh;
+  padding: 100px 5% 50px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.full-screen-app {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Kage Typography Utilities */
+.eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-shadow: 0 1px 16px rgba(3,6,8,.9);
+}
+
+.kage-display {
+  text-transform: uppercase;
+  line-height: 1.055;
+  letter-spacing: -.012em;
+  font-weight: 300;
+  text-shadow: 0 2px 34px rgba(3,6,8,.72);
+}
+
+.kage-h-hero {
+  font-size: clamp(26px, 3.5vw, 64px);
+  font-weight: 400;
+}
+
+.kage-h-sec {
+  font-size: clamp(30px, 4.0vw, 60px);
+}
+
+.kage-body-lg {
+  font-size: clamp(14px, 1.1vw, 19px);
+  line-height: 1.72;
+  color: var(--bone-dim);
+  font-weight: 300;
+  text-shadow: 0 1px 20px rgba(3,6,8,.88);
+}
+
+/* Kage Layout Backgrounds */
+.kage-sec {
+  position: relative;
+  z-index: 10;
+}
+
+.kage-sec::before {
+  content: '';
+  position: absolute;
+  inset: -22% -4%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(110% 62% at 30% 50%, rgba(4,7,10,.88), rgba(4,7,10,.62) 42%, rgba(4,7,10,.18) 74%, rgba(4,7,10,0));
+  mask-image: linear-gradient(transparent, #000 44%);
+  -webkit-mask-image: linear-gradient(transparent, #000 44%);
+}
