@@ -39,7 +39,7 @@ class SimulationBridge:
 
         # --- Challenge State ---
         self.failed_host: int = -1          # -1 = no failure; 0-4 = host index
-        self.flash_sale_steps_left: int = 0  # countdown for flash sale
+        self.flash_sale_active: bool = False
         self.flash_sale_multiplier: float = 1.0
         self.memory_pressure_steps_left: int = 0
 
@@ -52,11 +52,11 @@ class SimulationBridge:
         self.failed_host = random.randint(0, NUM_HOSTS - 1)
         return {"failed_host": self.failed_host}
 
-    def inject_flash_sale(self, multiplier: float = 4.0, duration_steps: int = 20) -> dict:
-        """Spike request load for a number of steps."""
-        self.flash_sale_steps_left = duration_steps
-        self.flash_sale_multiplier = multiplier
-        return {"multiplier": multiplier, "duration_steps": duration_steps}
+    def inject_flash_sale(self, multiplier: float = 4.0) -> dict:
+        """Toggle flash sale traffic spike."""
+        self.flash_sale_active = not getattr(self, "flash_sale_active", False)
+        self.flash_sale_multiplier = multiplier if self.flash_sale_active else 1.0
+        return {"multiplier": self.flash_sale_multiplier, "active": self.flash_sale_active}
 
     def inject_memory_pressure(self, duration_steps: int = 15) -> dict:
         """Apply memory pressure for a number of steps."""
@@ -85,7 +85,7 @@ class SimulationBridge:
         base_rate = float(queue_length) * 10.0 + float(cpu_util) * 2.0
 
         # Flash-sale spike multiplier
-        if self.flash_sale_steps_left > 0:
+        if getattr(self, "flash_sale_active", False):
             base_rate *= self.flash_sale_multiplier
 
         # Memory pressure: effectively slows processing → queue backs up → rate appears higher
@@ -117,8 +117,8 @@ class SimulationBridge:
             "request_rate_raw": round(base_rate, 2),
             "host_traffic": [round(v, 4) for v in host_traffic_norm],
             "failed_host": self.failed_host,
-            "flash_sale_active": self.flash_sale_steps_left > 0,
-            "flash_sale_steps_left": self.flash_sale_steps_left,
+            "flash_sale_active": getattr(self, "flash_sale_active", False),
+            "flash_sale_steps_left": 9999 if getattr(self, "flash_sale_active", False) else 0,
             "memory_pressure_active": self.memory_pressure_steps_left > 0,
             "memory_pressure_steps_left": self.memory_pressure_steps_left,
         }
@@ -181,10 +181,6 @@ class SimulationBridge:
             self.step_idx += 1
 
             # Tick down challenge countdowns
-            if self.flash_sale_steps_left > 0:
-                self.flash_sale_steps_left -= 1
-                if self.flash_sale_steps_left == 0:
-                    await self._emit("FLASH_SALE_ENDED", {"message": "Flash sale traffic spike resolved"})
 
             if self.memory_pressure_steps_left > 0:
                 self.memory_pressure_steps_left -= 1

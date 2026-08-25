@@ -40,7 +40,7 @@ class ComparisonBridge:
 
         # --- Challenge State ---
         self.failed_host: int = -1
-        self.flash_sale_steps_left: int = 0
+        self.flash_sale_active: bool = False
         self.flash_sale_multiplier: float = 1.0
         self.memory_pressure_steps_left: int = 0
 
@@ -48,10 +48,10 @@ class ComparisonBridge:
         self.failed_host = random.randint(0, 4)
         return {"failed_host": self.failed_host}
 
-    def inject_flash_sale(self, multiplier: float = 4.0, duration_steps: int = 20) -> dict:
-        self.flash_sale_steps_left = duration_steps
-        self.flash_sale_multiplier = multiplier
-        return {"multiplier": multiplier, "duration_steps": duration_steps}
+    def inject_flash_sale(self, multiplier: float = 4.0) -> dict:
+        self.flash_sale_active = not getattr(self, "flash_sale_active", False)
+        self.flash_sale_multiplier = multiplier if self.flash_sale_active else 1.0
+        return {"multiplier": self.flash_sale_multiplier, "active": self.flash_sale_active}
 
     def inject_memory_pressure(self, duration_steps: int = 15) -> dict:
         self.memory_pressure_steps_left = duration_steps
@@ -63,7 +63,7 @@ class ComparisonBridge:
     def _compute_host_traffic(self, cpu_util: float, queue_length: float, vm_count: int) -> dict:
         base_rate = float(queue_length) * 10.0 + float(cpu_util) * 2.0
         
-        if self.flash_sale_steps_left > 0:
+        if getattr(self, "flash_sale_active", False):
             base_rate *= self.flash_sale_multiplier
         if self.memory_pressure_steps_left > 0:
             base_rate *= 1.5
@@ -87,7 +87,7 @@ class ComparisonBridge:
             "request_rate": round(request_rate_norm, 4),
             "host_traffic": [round(v, 4) for v in host_traffic_norm],
             "failed_host": self.failed_host,
-            "flash_sale_active": self.flash_sale_steps_left > 0,
+            "flash_sale_active": getattr(self, "flash_sale_active", False),
             "memory_pressure_active": self.memory_pressure_steps_left > 0,
         }
 
@@ -146,7 +146,7 @@ class ComparisonBridge:
             
             self.step_idx += 1
             
-            challenge_active = (self.flash_sale_steps_left > 0) or (self.memory_pressure_steps_left > 0) or (self.failed_host >= 0)
+            challenge_active = getattr(self, "flash_sale_active", False) or (self.memory_pressure_steps_left > 0) or (self.failed_host >= 0)
             
             # Apply Bonus Reward during challenges
             if challenge_active:
@@ -154,9 +154,6 @@ class ComparisonBridge:
                     rew_prop += 5.0
                 elif rew_reg > rew_prop + 0.05:
                     rew_reg += 5.0
-
-            if self.flash_sale_steps_left > 0:
-                self.flash_sale_steps_left -= 1
             if self.memory_pressure_steps_left > 0:
                 self.memory_pressure_steps_left -= 1
             

@@ -154,29 +154,38 @@ async def clear_host_failure():
 @app.post("/api/challenges/flash_sale")
 async def inject_flash_sale():
     """
-    Trigger a flash-sale traffic spike: request_rate × 4 for 20 simulation steps.
+    Toggle a flash-sale traffic spike.
     Cars surge across all lanes to visualise the overload.
     """
     sim = active_simulations.get("default")
     if not sim or not hasattr(sim, "inject_flash_sale"):
         return {"status": "no_simulation_running"}
 
-    result = sim.inject_flash_sale(multiplier=4.0, duration_steps=20)
+    result = sim.inject_flash_sale(multiplier=4.0)
+
+    if result.get("active", False):
+        event_type = "FLASH_SALE_SPIKE"
+        message = "Flash sale detected! Request traffic surging 4×."
+        severity = "warning"
+    else:
+        event_type = "FLASH_SALE_ENDED"
+        message = "Flash sale traffic spike resolved."
+        severity = "info"
 
     event = CloudVerseEvent(
         simulation_id=sim.simulation_id,
         simulation_time=sim.step_idx,
-        event_type="FLASH_SALE_SPIKE",
+        event_type=event_type,
         source="challenge_injector",
-        severity="warning",
+        severity=severity,
         payload={
-            "multiplier": result["multiplier"],
-            "duration_steps": result["duration_steps"],
-            "message": "Flash sale detected! Request traffic surging 4×."
+            "multiplier": result.get("multiplier", 1.0),
+            "active": result.get("active", False),
+            "message": message
         }
     )
     await event_bus.publish(event)
-    return {"status": "injected", **result}
+    return {"status": "toggled", **result}
 
 @app.post("/api/challenges/memory_pressure")
 async def inject_memory_pressure():

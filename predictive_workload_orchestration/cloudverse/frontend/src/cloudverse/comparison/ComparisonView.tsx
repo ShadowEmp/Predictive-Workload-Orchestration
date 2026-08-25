@@ -263,9 +263,9 @@ export default function ComparisonView() {
           className="btn-secondary"
           style={{ fontSize: '0.75rem', padding: '6px 12px', border: challengeState.flashSaleActive ? '1px solid rgba(255,153,0,0.5)' : undefined, opacity: challengeLoading['flashSale'] ? 0.6 : 1 }}
           onClick={() => handleChallenge('flashSale', 'flash_sale')}
-          disabled={challengeLoading['flashSale'] || challengeState.flashSaleActive}
+          disabled={challengeLoading['flashSale']}
         >
-          {challengeLoading['flashSale'] ? '⟳...' : challengeState.flashSaleActive ? '🔥 Flash Sale Active' : '🔥 Flash Sale Spike'}
+          {challengeLoading['flashSale'] ? '⟳...' : challengeState.flashSaleActive ? '🔥 Flash Sale Active (Click to clear)' : '🔥 Flash Sale Spike'}
         </button>
 
         <button

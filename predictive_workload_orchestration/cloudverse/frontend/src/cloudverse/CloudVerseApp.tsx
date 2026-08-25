@@ -366,12 +366,12 @@ export default function CloudVerseApp() {
                   opacity: challengeLoading['flashSale'] ? 0.6 : 1,
                 }}
                 onClick={handleFlashSale}
-                disabled={challengeLoading['flashSale'] || challengeState.flashSaleActive}
+                disabled={challengeLoading['flashSale']}
               >
                 {challengeLoading['flashSale']
-                  ? '⟳ Injecting...'
+                  ? '⟳ Toggling...'
                   : challengeState.flashSaleActive
-                  ? '🔥 Flash Sale Active (auto-clears)'
+                  ? '🔥 Flash Sale Active (Click to clear)'
                   : '🔥 Flash Sale Spike'}
               </button>
 
